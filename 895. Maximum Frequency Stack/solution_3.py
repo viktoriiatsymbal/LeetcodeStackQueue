@@ -7,34 +7,40 @@ class FreqStack(object):
     """
     FreqStack class."""
     def __init__(self):
-        self.dict_of_occurrence = {}
-        self.max_frequency = 0
-        self.dict_of_occurrence_grouped = {}
+        self.stack_of_val = deque()
+        self.stack_of_frequency = deque()
 
     def push(self, val):
         """
         :type val: int
         :rtype: None
         """
-        if val not in self.dict_of_occurrence:
-            self.dict_of_occurrence[val] = 0
-        self.dict_of_occurrence[val] += 1
-        frequency = self.dict_of_occurrence[val]
-        if frequency not in self.dict_of_occurrence_grouped:
-            self.dict_of_occurrence_grouped[frequency] = deque()
-        self.dict_of_occurrence_grouped[frequency].append(val)
-        self.max_frequency = max(self.max_frequency, frequency)
+        if val in self.stack_of_val:
+            self.stack_of_val.append(val)
+            self.stack_of_frequency.append(self.stack_of_val.count(val)+1)
+        else:
+            self.stack_of_val.append(val)
+            self.stack_of_frequency.append(1)
 
     def pop(self):
         """
         :rtype: int
         """
-        item_to_pop = self.dict_of_occurrence_grouped[self.max_frequency].pop()
-        self.dict_of_occurrence[item_to_pop] -= 1
-        if not self.dict_of_occurrence_grouped[self.max_frequency]:
-            del self.dict_of_occurrence_grouped[self.max_frequency]
-            self.max_frequency -= 1
-        return item_to_pop
+        index_counter = -1
+        max_freq = max(self.stack_of_frequency)
+        self.stack_of_val.reverse()
+        self.stack_of_frequency.reverse()
+        max_index = self.stack_of_frequency.index(max_freq)
+        for ele in self.stack_of_val:
+            index_counter += 1
+            if index_counter == max_index:
+                self.stack_of_val.remove(ele)
+                self.stack_of_frequency.remove(max_freq)
+                item_popped = ele
+                break
+        self.stack_of_val.reverse()
+        self.stack_of_frequency.reverse()
+        return item_popped
 
 # Your FreqStack object will be instantiated and called as such:
 # obj = FreqStack()
